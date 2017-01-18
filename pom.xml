@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -24,10 +25,20 @@
 			<url>https://repo.jenkins-ci.org/public/</url>
 		</repository>
 		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
+			<id>repo-snapshots</id>
+			<url>https://repo.craftyn.com/repository/snapshots/</url>
 		</repository>
 	</repositories>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.baloise</groupId>
+			<artifactId>rocket-chat-rest-client</artifactId>
+			<version>0.1.2-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>repo.jenkins-ci.org</id>
@@ -61,16 +72,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
-
-
-	<dependencies>
-		<dependency>
-			<groupId>com.github.baloise</groupId>
-			<artifactId>rocket-chat-rest-client</artifactId>
-			<version>master-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
 </project>
