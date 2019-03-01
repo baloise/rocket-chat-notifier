@@ -3,13 +3,14 @@ package com.baloise.jenkins.plugin;
 import static java.lang.String.format;
 
 import java.io.IOException;
-import java.util.Set;
 
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import com.github.baloise.rocketchatrestclient.RocketChatClient;
-import com.github.baloise.rocketchatrestclient.model.Room;
+import com.github.baloise.rocketchatrestclient.RocketChatQueryParams;
+import com.github.baloise.rocketchatrestclient.model.Channel;
+import com.github.baloise.rocketchatrestclient.model.Message;
 
 import hudson.Extension;
 import hudson.ExtensionPoint;
@@ -66,7 +67,8 @@ public class RocketChatNotifier extends RunListener<Run<?, ?>> implements Descri
 	private void chat(final String message, final TaskListener listener) {
 		if(listener != null) listener.getLogger().println(format("Notifying %s/%s '%s'", getDescriptor().getUrl(), getDescriptor().getRoom(), message));
 		try {
-			getDescriptor().getRocketChatClient().send(getDescriptor().getRoom(), message);
+		    Channel ch = this.getDescriptor().getRocketChatClient().getChannelsApi().info(this.getDescriptor().getRoom());
+			getDescriptor().getRocketChatClient().getChatApi().postMessage(ch, new Message(message));
 		} catch (IOException e) {
 			e.printStackTrace();
 			if(listener != null) listener.getLogger().println("Rocket.Chat Notification failed");
@@ -110,15 +112,15 @@ public class RocketChatNotifier extends RunListener<Run<?, ?>> implements Descri
 				)  {
 			try {
 				RocketChatClient rcClient = new RocketChatClient(url, user, password);
-				Set<Room> publicRooms = rcClient.getPublicRooms();
+				Channel[] channels = rcClient.getChannelsApi().list(new RocketChatQueryParams().setCount(0));
 				StringBuilder message = new StringBuilder("available rooms are: ");
 				boolean comma = false;
-				for (Room r : publicRooms) {
-					if(r.name.equals(room))
-						return FormValidation.ok("Server version is "+rcClient.getRocketChatVersion());
+				for (Channel c : channels) {
+					if(c.getName().equals(room))
+						return FormValidation.ok("Server version is "+rcClient.getServerInformation().getVersion());
 					if(comma) message.append(", ");							
 					comma = true;
-					message.append("'"+r.name+"'");
+					message.append("'" + c.getName() + "'");
 				}
 				return FormValidation.error("available rooms are "+message);
 			} catch (Exception e) {
